@@ -10,6 +10,23 @@ fw/de0nano_sections.lds
 sim/*.vvp
 sim/*.vcd
 
+# Quartus (keep .qpf/.qsf; ignore build trees and reports)
+quartus/db/
+quartus/incremental_db/
+quartus/output_files/
+quartus/simulation/
+quartus/greybox_tmp/
+quartus/*.qws
+quartus/*.qdf
+quartus/*.rpt
+quartus/*.done
+quartus/*.smsg
+quartus/*.summary
+quartus/*.jdi
+quartus/*.pin
+quartus/*.sld
+c5_pin_model_dump.txt
+
 # Editor / OS
 *.o
 *~

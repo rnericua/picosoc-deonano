@@ -23,7 +23,17 @@ module de0nano_mem #(
 	input      [31:0] wdata,
 	output     [31:0] rdata
 );
-	localparam integer AW = $clog2(WORDS);
+	/* Verilog-2001: $clog2 is 2005 / SV. Quartus VERILOG_2001 accepts this. */
+	function integer clog2;
+		input integer value;
+		integer i;
+		begin
+			clog2 = 0;
+			for (i = value - 1; i > 0; i = i >> 1)
+				clog2 = clog2 + 1;
+		end
+	endfunction
+	localparam integer AW = clog2(WORDS);
 `ifdef SIMULATION
 	reg [31:0] mem [0:WORDS-1];
 	initial begin
@@ -67,22 +77,9 @@ module de0nano_mem #(
 		.data_a         (wdata),
 		.q_a            (rdata),
 		.aclr0          (1'b0),
-		.aclr1          (1'b0),
 		.addressstall_a (1'b0),
-		.rden_a         (1'b1),
-		.address_b      ({AW{1'b0}}),
-		.addressstall_b (1'b0),
-		.byteena_b      (4'b0),
-		.clock1         (1'b1),
 		.clocken0       (1'b1),
-		.clocken1       (1'b1),
-		.clocken2       (1'b1),
-		.clocken3       (1'b1),
-		.data_b         (32'b0),
-		.eccstatus      (),
-		.q_b            (),
-		.rden_b         (1'b1),
-		.wren_b         (1'b0)
+		.rden_a         (1'b1)
 	);
 `endif
 endmodule

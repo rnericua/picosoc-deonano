@@ -1,5 +1,5 @@
-# PicoSoC on Terasic DE0-Nano — PR-1: RAM-boot firmware + Icarus sim.
-# Quartus bitstream, update_mif, and BOOT=xip are later PRs.
+# PicoSoC on Terasic DE0-Nano — PR-1 sim + PR-2 Quartus / MIF RAM-boot.
+# BOOT=xip is PR-5.
 
 # Optional user-local tools (xPack GCC, extracted iverilog .deb).
 ifneq ($(wildcard $(HOME)/.local/xpack-riscv-none-elf-gcc-14.2.0-3/bin/riscv-none-elf-gcc),)
@@ -51,11 +51,19 @@ SOC_RTL := \
 	$(PICORV32)/picosoc/simpleuart.v \
 	$(PICORV32)/picorv32.v
 
-.PHONY: all fw sim clean
+.PHONY: all fw sim clean need-quartus quartus quartus-blink update-mif sta \
+        check-mif prog prog-blink
 
 all: sim
 
-fw: fw/firmware.mem
+need-quartus:
+	@command -v quartus_sh >/dev/null 2>&1 || { \
+	  echo "quartus_sh not on PATH."; \
+	  echo "Install Quartus Prime Lite (Cyclone IV E / EP4CE22F17C6 device pack)"; \
+	  echo "and add <install>/quartus/bin to PATH."; \
+	  exit 1; }
+
+fw: fw/firmware.mem fw/firmware.mif
 
 fw/de0nano_sections.lds: fw/sections.lds
 	$(CROSS)cpp -P $(BOOT_DEFS) -o $@ $^
@@ -73,6 +81,10 @@ fw/firmware.bin: fw/firmware.elf
 fw/firmware.mem: fw/firmware.bin fw/makehex.py
 	python3 fw/makehex.py $< $(MEM_WORDS) > $@
 
+# Quartus altsyncram init (path relative to quartus/*.qpf → ../fw/firmware.mif).
+fw/firmware.mif: fw/firmware.bin scripts/bin2mif.py
+	python3 scripts/bin2mif.py $< $(MEM_WORDS) > $@
+
 sim/de0nano_tb.vvp: sim/de0nano_tb.v $(SOC_RTL) fw/firmware.mem
 	iverilog $(IVERILOGFLAGS) -g2005 -s testbench -o $@ $(SIM_DEFS) \
 	  sim/de0nano_tb.v $(SOC_RTL)
@@ -80,7 +92,29 @@ sim/de0nano_tb.vvp: sim/de0nano_tb.v $(SOC_RTL) fw/firmware.mem
 sim: sim/de0nano_tb.vvp
 	vvp $(VVP_M) -N $< $(VVPFLAGS)
 
+quartus: need-quartus fw/firmware.mif
+	$(MAKE) -C quartus all
+
+quartus-blink: need-quartus
+	$(MAKE) -C quartus blink
+
+update-mif: need-quartus fw/firmware.mif
+	$(MAKE) -C quartus update-mif
+
+sta: need-quartus
+	$(MAKE) -C quartus sta
+
+check-mif: need-quartus
+	$(MAKE) -C quartus check-mif
+
+prog: need-quartus
+	$(MAKE) -C quartus prog
+
+prog-blink: need-quartus
+	$(MAKE) -C quartus prog-blink
+
 clean:
 	rm -f fw/firmware.elf fw/firmware.bin fw/firmware.mem fw/firmware.mif \
 	      fw/firmware_xip.hex fw/de0nano_sections.lds \
 	      sim/de0nano_tb.vvp sim/de0nano.vcd
+	$(MAKE) -C quartus clean

@@ -1,0 +1,7 @@
+# PicoSoC DE0-Nano Quartus project.
+# Revisions: de0nano (SoC + MIF RAM-boot), de0nano_blink (LED[0] smoke).
+
+QUARTUS_VERSION = "18.1"
+DATE = "08:31:2026"
+PROJECT_REVISION = "de0nano"
+PROJECT_REVISION = "de0nano_blink"

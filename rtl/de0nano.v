@@ -84,8 +84,16 @@ module de0nano (
 		end
 	end
 
+	/* PR-2 STA fallback: add VERILOG_MACRO "BARREL_SHIFTER_OFF=1" and
+	 * stay at 50 MHz / UART 434. Do not drop to a 25 MHz PLL here. */
+`ifdef BARREL_SHIFTER_OFF
+	localparam BARREL = 0;
+`else
+	localparam BARREL = 1;
+`endif
+
 	picosoc #(
-		.BARREL_SHIFTER    (1),
+		.BARREL_SHIFTER    (BARREL),
 		.ENABLE_MUL        (0),
 		.ENABLE_DIV        (0),
 		.ENABLE_FAST_MUL   (1),

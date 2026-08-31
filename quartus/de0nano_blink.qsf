@@ -1,0 +1,21 @@
+# No-CPU LED[0] smoke revision. Same device and pins as the SoC.
+
+set_global_assignment -name FAMILY "Cyclone IV E"
+set_global_assignment -name DEVICE EP4CE22F17C6
+set_global_assignment -name TOP_LEVEL_ENTITY de0nano_blink
+set_global_assignment -name ORIGINAL_QUARTUS_VERSION 18.1.0
+set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
+set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
+set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
+set_global_assignment -name DEVICE_FILTER_PACKAGE FBGA
+set_global_assignment -name DEVICE_FILTER_PIN_COUNT 256
+set_global_assignment -name DEVICE_FILTER_SPEED_GRADE 6
+set_global_assignment -name ERROR_CHECK_FREQUENCY_DIVISOR 1
+set_global_assignment -name NOMINAL_CORE_SUPPLY_VOLTAGE 1.2V
+set_global_assignment -name VERILOG_INPUT_VERSION VERILOG_2001
+set_global_assignment -name POWER_UP_DONT_CARE OFF
+set_global_assignment -name ENABLE_SIGNALTAP OFF
+set_global_assignment -name SDC_FILE ../boards/de0nano/de0nano_blink.sdc
+set_global_assignment -name VERILOG_FILE ../rtl/de0nano_blink.v
+
+source ../boards/de0nano/pins.qsf
