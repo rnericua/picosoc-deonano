@@ -1,0 +1,16 @@
+# Firmware build products
+fw/*.elf
+fw/*.bin
+fw/*.mem
+fw/*.mif
+fw/*_xip.hex
+fw/de0nano_sections.lds
+
+# Simulation
+sim/*.vvp
+sim/*.vcd
+
+# Editor / OS
+*.o
+*~
+.DS_Store
